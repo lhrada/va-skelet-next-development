@@ -255,44 +255,117 @@ $limit = isset($request->input('limit')) ? $request->input('limit') : 20;
 
 ## Enums
 
-**Použij enum** pro fixed sady hodnot:
+**Použij enum** pro fixed sady hodnot s povinnými metodami:
 
 ```php
-// ✅ SPRÁVNĚ - enum
-enum ProductType: string
+// ✅ SPRÁVNĚ - enum s povinnými metodami
+enum Key: string
 {
-    case Physical = 'physical';
-    case Digital = 'digital';
-    case Service = 'service';
-    
-    public function label(): string
+    case OrderCreated = 'order.created';
+    case OrderCancelled = 'order.cancelled';
+    case DeliveryPickedUp = 'delivery.picked-up';
+
+    /**
+     * POVINNÁ metoda - mapování pro API/UI
+     * Vrací překlady pro všechny cases
+     */
+    public static function apiMappings(): array
     {
-        return match ($this) {
-            self::Physical => 'Fyzický produkt',
-            self::Digital => 'Digitální produkt',
-            self::Service => 'Služba',
-        };
+        return [
+            self::OrderCreated->value => __('Objednávka vytvořena'),
+            self::OrderCancelled->value => __('Objednávka zrušena'),
+            self::DeliveryPickedUp->value => __('Zásilka je doručována'),
+        ];
+    }
+
+    /**
+     * POVINNÁ metoda - párování hodnoty a názvu
+     * Vrací strukturu pro jednotlivý case
+     */
+    public function pair(): array
+    {
+        return [
+            'value' => $this->value,
+            'name' => self::apiMappings()[$this->value] ?? $this->value,
+            'description' => self::descriptions()[$this->value] ?? null,
+        ];
+    }
+
+    /**
+     * NEPOVINNÁ metoda - detailní metadata
+     * Rozšířené informace včetně nastavení a oprávnění
+     */
+    public static function descriptions(): array
+    {
+        return [
+            self::OrderCreated->value => [
+                'value' => self::OrderCreated->value,
+                'name' => self::apiMappings()[self::OrderCreated->value],
+                'allow' => [
+                    'sender' => true,
+                    'recipient' => false,
+                ],
+                'type' => ['mail', 'sms', 'push'],
+                'description' => __('Odeslání e-mailu zákazníkovi po vytvoření objednávky'),
+            ],
+            // ...další cases
+        ];
+    }
+
+    /**
+     * NEPOVINNÁ metoda - definice pluginů
+     * Přiřazení cases k pluginům
+     */
+    public static function plugins(): array
+    {
+        return [
+            Plugins::Eshop->value => [
+                self::OrderCreated->value,
+                self::OrderCancelled->value,
+            ],
+            Plugins::Delivery->value => [
+                self::DeliveryPickedUp->value,
+            ],
+        ];
     }
 }
 
 // Použití
-$type = ProductType::Physical;
-$label = $type->label();
+$key = Key::OrderCreated;
+$pair = $key->pair(); // ['value' => 'order.created', 'name' => '...', 'description' => [...]]
+$mappings = Key::apiMappings(); // ['order.created' => 'Objednávka vytvořena', ...]
 
-// ❌ ŠPATNĚ - konstanty
-class ProductType
+// ❌ ŠPATNĚ - konstanty nebo magic strings
+class MessageKey
 {
-    public const PHYSICAL = 'physical';
-    public const DIGITAL = 'digital';
-    public const SERVICE = 'service';
+    public const ORDER_CREATED = 'order_created'; // Nechci!
 }
 ```
 
+**Struktura enum:**
+
+1. **Case názvy:** TitleCase (např. `OrderCreated`, `DeliveryPickedUp`)
+2. **Case hodnoty:** snake_case s **tečkou** jako separátorem (např. `order.created`, `delivery.picked-up`)
+
+**Povinné metody:**
+
+- `apiMappings()` - static metoda vracející pole `[value => překlad]` pro všechny cases
+- `pair()` - instance metoda vracející strukturu `['value', 'name', 'description']` pro jednotlivý case
+
+**Nepovinné metody:**
+
+- `descriptions()` - static metoda s detailními metadata pro každý case (konfigurace, oprávnění, typy)
+- `plugins()` - static metoda s přiřazením cases k pluginům
+
 **Kdy použít:**
-- Stavy (OrderState, ProductState)
-- Typy (ProductType, DocumentType)
-- Oprávnění (Permission enum)
-- Fixed hodnoty bez logiky
+- Stavy (OrderState, DeliveryState)
+- Typy zpráv (Key enum pro notifikace)
+- Typy produktů (ProductType)
+- Fixed hodnoty s metadata a překlady
+
+**Kdy NEPOUŽÍT:**
+- Dynamické hodnoty z databáze
+- Hodnoty vyžadující složitou logiku
 
 ## PHPDoc
 
