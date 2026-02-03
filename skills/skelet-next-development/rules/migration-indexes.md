@@ -117,5 +117,3 @@ $table->unique(['product_id', 'locale']);
 - ❌ Nevytvářej indexy na low-cardinality sloupce (např. boolean s 2 hodnotami) pokud nejsou v WHERE
 - ✅ Použij složené indexy pro časté kombinace filtrů
 - ✅ Foreign keys mají automatický index
-
-Reference: [Database Performance](../../instructions/database.instructions.md)

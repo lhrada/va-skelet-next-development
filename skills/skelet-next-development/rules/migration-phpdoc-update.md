@@ -109,5 +109,3 @@ class Product extends Model
 - Static analysis (PHPStan, Psalm)
 - Dokumentace pro ostatní vývojáře
 - Type safety
-
-Reference: [Model Documentation](../../instructions/database.instructions.md)

@@ -60,5 +60,3 @@ $table->foreignId('tag_id')
 **Naming:**
 - Sloupec: `{related_table_singular}_id` (např. `user_id`, `product_id`)
 - Pro self-reference: `parent_id`, `main_product_id`, `child_product_id`
-
-Reference: [Database Instructions](../../instructions/database.instructions.md)

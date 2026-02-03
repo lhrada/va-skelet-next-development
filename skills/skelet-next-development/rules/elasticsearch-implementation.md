@@ -174,16 +174,21 @@ public function shouldBeSearchable(): bool
 ### Krok 8: Scout příkazy
 
 ```bash
+
 # Vytvoření indexu
+
 docker compose run php php artisan explorer:create YourModel
 
 # Import všech záznamů
+
 docker compose run php php artisan scout:import "App\Models\YourModel"
 
 # Smazání indexu
+
 docker compose run php php artisan explorer:delete YourModel
 
 # Flush a reimport
+
 docker compose run php php artisan scout:flush "App\Models\YourModel"
 docker compose run php php artisan scout:import "App\Models\YourModel"
 ```
@@ -361,13 +366,17 @@ class YourModel extends Model implements Translatable
 ### Krok 4: Scout příkazy pro Web model
 
 ```bash
+
 # Vytvoření indexu
+
 docker compose run php php artisan explorer:create "App\Models\Search\Web\YourModel"
 
 # Import všech záznamů
+
 docker compose run php php artisan scout:import "App\Models\Search\Web\YourModel"
 
 # Smazání indexu
+
 docker compose run php php artisan explorer:delete "App\Models\Search\Web\YourModel"
 ```
 
@@ -401,6 +410,7 @@ $model->unsearchable(); // Odstraní z indexu
 ## Vyhledávání
 
 ### Admin (přímo na modelu):
+
 ```php
 use App\Models\Article;
 
@@ -408,6 +418,7 @@ $results = Article::search('hledaný text')->get();
 ```
 
 ### Web (přes search model):
+
 ```php
 use App\Models\Search\Web\Product;
 
@@ -415,6 +426,7 @@ $results = Product::search('hledaný text')->get();
 ```
 
 ### Pokročilé vyhledávání s Explorer:
+
 ```php
 use JeroenG\Explorer\Domain\Syntax\Matching;
 
@@ -427,17 +439,20 @@ $results = Product::search('*')
 ## Konfigurace
 
 ### `config/scout.php`
+
 - Driver nastavení
 - Chunk size pro import
 - Soft delete behavior
 
 ### `config/explorer.php`
+
 - Elasticsearch connection
 - Default index settings
 - Analyzery a tokeny
 - **Seznam indexovaných modelů** (`'indexes' => []`)
 
 ### `config/va-application.php`
+
 ```php
 'search' => [
     'prefix' => 'am_', // Prefix pro indexy
@@ -508,6 +523,7 @@ use App\Models\Search\Web\YourModel as SearchYourModel;
 ## Checklist
 
 ### Admin pouze:
+
 - [ ] Přidat do `config/explorer.php` (`'indexes'`)
 - [ ] Přidat `Explored`, `IndexSettings` interface
 - [ ] Přidat `Searchable`, `DefaultSearchIndexSetting`, `IsSearchable` traits
@@ -521,6 +537,7 @@ use App\Models\Search\Web\YourModel as SearchYourModel;
 - [ ] (Volitelně) Přidat tlačítko do RoutineController
 
 ### Web pouze:
+
 - [ ] Přidat web model do `config/explorer.php` (`'indexes'`)
 - [ ] Přidat sloupec `is_searchable` do parent modelu (migrace)
 - [ ] Přidat do `$fillable` a `casts()` v parent modelu
@@ -535,6 +552,7 @@ use App\Models\Search\Web\YourModel as SearchYourModel;
 - [ ] (Volitelně) Přidat tlačítko do RoutineController
 
 ### Obojí (Admin + Web):
+
 - [ ] Provést všechny kroky pro Admin
 - [ ] Provést všechny kroky pro Web
 - [ ] Vytvořit oba indexy samostatně
@@ -543,20 +561,24 @@ use App\Models\Search\Web\YourModel as SearchYourModel;
 ## Troubleshooting
 
 ### Index neexistuje
+
 ```bash
 docker compose run php php artisan explorer:create YourModel
 ```
 
 ### Data nejsou aktuální
+
 ```bash
 docker compose run php php artisan scout:flush "App\Models\YourModel"
 docker compose run php php artisan scout:import "App\Models\YourModel"
 ```
 
 ### Model se neindexuje
+
 Zkontroluj `shouldBeSearchable()` metodu - vrací `true`?
 
 ### Zjistit co je v indexu
+
 Použij Kibana nebo Elasticsearch API přímo.
 
 ## Důležité poznámky

@@ -22,26 +22,34 @@ docker compose run php php artisan make:{type} {name}
 ### Základní controller
 
 ```bash
+
 # Admin controller
+
 docker compose run php php artisan make:controller Admin/Products/ProductController
 
 # Public controller
+
 docker compose run php php artisan make:controller Public/Articles/ArticleController
 
 # Společný controller
+
 docker compose run php php artisan make:controller AuthController
 ```
 
 ### S options
 
 ```bash
+
 # Resource controller (CRUD metody)
+
 docker compose run php php artisan make:controller Admin/Products/ProductController --resource
 
 # API resource controller (bez create/edit)
+
 docker compose run php php artisan make:controller Admin/Products/ProductController --api
 
 # Invokable controller (single action)
+
 docker compose run php php artisan make:controller Admin/Products/ExportController --invokable
 ```
 
@@ -58,22 +66,29 @@ docker compose run php php artisan make:model Product
 ### S options (kombinace)
 
 ```bash
+
 # S migrací
+
 docker compose run php php artisan make:model Product -m
 
 # S factory
+
 docker compose run php php artisan make:model Product -f
 
 # S seederem
+
 docker compose run php php artisan make:model Product -s
 
 # Vše najednou (migration, factory, seeder)
+
 docker compose run php php artisan make:model Product -mfs
 
 # Vše + controller
+
 docker compose run php php artisan make:model Product -mfsc
 
 # Vše + resource controller
+
 docker compose run php php artisan make:model Product --all
 ```
 
@@ -91,13 +106,17 @@ docker compose run php php artisan make:model Product --all
 ## Migration
 
 ```bash
+
 # Vytvoření tabulky
+
 docker compose run php php artisan make:migration create_products_table
 
 # Přidání sloupců
+
 docker compose run php php artisan make:migration add_published_to_products_table
 
 # Změna tabulky
+
 docker compose run php php artisan make:migration modify_products_table
 ```
 
@@ -111,10 +130,13 @@ Viz [migration-naming.md](migration-naming.md)
 ## Policy
 
 ```bash
+
 # Základní policy
+
 docker compose run php php artisan make:policy ProductPolicy
 
 # S modelem
+
 docker compose run php php artisan make:policy ProductPolicy --model=Product
 ```
 
@@ -128,23 +150,30 @@ docker compose run php php artisan make:seeder PermissionSeeder
 ## Factory
 
 ```bash
+
 # Factory pro model
+
 docker compose run php php artisan make:factory ProductFactory
 
 # S modelem
+
 docker compose run php php artisan make:factory ProductFactory --model=Product
 ```
 
 ## Test
 
 ```bash
+
 # Feature test (výchozí)
+
 docker compose run php php artisan make:test ProductTest
 
 # Unit test
+
 docker compose run php php artisan make:test ProductTest --unit
 
 # Test s PHPUnit
+
 docker compose run php php artisan make:test ProductTest --phpunit
 ```
 
@@ -153,20 +182,26 @@ docker compose run php php artisan make:test ProductTest --phpunit
 Pro custom třídy (Services, Helpers, atd.):
 
 ```bash
+
 # Service
+
 docker compose run php php artisan make:class Domain/Products/ProductService
 
 # Helper
+
 docker compose run php php artisan make:class Helpers/StringHelper
 
 # Custom třída
+
 docker compose run php php artisan make:class Frame/Validation/CustomValidator
 ```
 
 ## Request (Form Request)
 
 ```bash
+
 # Form request pro validaci
+
 docker compose run php php artisan make:request StoreProductRequest
 docker compose run php php artisan make:request UpdateProductRequest
 ```
@@ -176,10 +211,13 @@ docker compose run php php artisan make:request UpdateProductRequest
 ## Resource
 
 ```bash
+
 # API Resource
+
 docker compose run php php artisan make:resource ProductResource
 
 # Resource collection
+
 docker compose run php php artisan make:resource ProductCollection
 ```
 
@@ -192,14 +230,18 @@ docker compose run php php artisan make:middleware EnsureTenantMiddleware
 ## Command
 
 ```bash
+
 # Artisan command
+
 docker compose run php php artisan make:command CreatePermissions
 ```
 
 ## Job
 
 ```bash
+
 # Queue job
+
 docker compose run php php artisan make:job ProcessOrder
 docker compose run php php artisan make:job SendEmailJob
 ```
@@ -207,45 +249,58 @@ docker compose run php php artisan make:job SendEmailJob
 ## Event & Listener
 
 ```bash
+
 # Event
+
 docker compose run php php artisan make:event OrderCreated
 
 # Listener
+
 docker compose run php php artisan make:listener SendOrderConfirmation --event=OrderCreated
 ```
 
 ## Mail
 
 ```bash
+
 # Mailable
+
 docker compose run php php artisan make:mail OrderShipped
 ```
 
 ## Notification
 
 ```bash
+
 # Notification
+
 docker compose run php php artisan make:notification InvoicePaid
 ```
 
 ## Rule
 
 ```bash
+
 # Validation rule
+
 docker compose run php php artisan make:rule Uppercase
 ```
 
 ## Cast
 
 ```bash
+
 # Custom cast
+
 docker compose run php php artisan make:cast Json
 ```
 
 ## Observer
 
 ```bash
+
 # Model observer
+
 docker compose run php php artisan make:observer ProductObserver --model=Product
 ```
 
@@ -254,29 +309,38 @@ docker compose run php php artisan make:observer ProductObserver --model=Product
 ### Nový REST modul
 
 ```bash
+
 # 1. Model + migrace + factory + seeder
+
 docker compose run php php artisan make:model Product -mfs
 
 # 2. Controller
+
 docker compose run php php artisan make:controller Admin/Products/ProductController
 
 # 3. Policy
+
 docker compose run php php artisan make:policy ProductPolicy --model=Product
 
 # 4. Test
+
 docker compose run php php artisan make:test ProductTest
 
 # 5. Service (generic class)
+
 docker compose run php php artisan make:class Domain/Products/ProductService
 ```
 
 ### Nový enum nebo helper
 
 ```bash
+
 # Enum
+
 docker compose run php php artisan make:class Domain/ProductType
 
 # Helper
+
 docker compose run php php artisan make:class Helpers/PriceHelper
 ```
 

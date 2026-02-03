@@ -148,17 +148,23 @@ Aktivuj tento skill když:
 ## Běžné příkazy
 
 ```bash
+
 # Docker
+
 docker-compose up                         # Start services
+
 docker-compose down --remove-orphans      # Stop services
+
 docker exec -it {container-name} bash     # Vstup do kontejneru
 
 # Artisan (přes docker compose)
+
 docker compose run php php artisan migrate
 docker compose run php php artisan test --compact
 docker compose run php php artisan app:create-permissions
 
 # Scaffolding
+
 docker compose run php php artisan make:controller Admin/Products/ProductController
 docker compose run php php artisan make:model Product -mfs
 docker compose run php php artisan make:policy ProductPolicy
@@ -170,16 +176,22 @@ docker compose run php php artisan make:policy ProductPolicy
 app/
 ├── Http/Controllers/
 │   ├── Admin/{Modul}/          # Admin API
+
 │   ├── Public/{Modul}/         # Public API
+
 │   └── {Název}Controller       # Společné
+
 ├── Models/                     # Eloquent modely
+
 └── Policies/                   # Authorization
 
 domain/                         # Business logika
+
 ├── {Modul}/
 │   └── {Entity}Service         # Servisní vrstva
 
 frame/                          # Framework extensions
+
 ├── Controllers/
 ├── Permissions/
 ├── Serializers/

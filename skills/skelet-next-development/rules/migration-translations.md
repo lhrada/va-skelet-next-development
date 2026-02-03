@@ -107,5 +107,3 @@ class Product extends Model
 - Formát: `{table}_translations` (množné číslo + _translations)
 - Příklad: `products` → `product_translations`
 - Příklad: `articles` → `article_translations`
-
-Reference: [Database Instructions](../../instructions/database.instructions.md)

@@ -102,5 +102,3 @@ DB::statement('ALTER TABLE orders MODIFY external_data JSON COMPRESSED=zlib NULL
 - Validační constraint zajišťuje integritu dat na DB úrovni
 - Prevence runtime chyb při parsování JSON
 - Komprese zlib šetří místo na disku bez dopadu na výkon
-
-Reference: [Database Instructions](../../instructions/database.instructions.md)

@@ -16,11 +16,13 @@ Podle tohoto návodu vytváříš dokumentaci pro API moduly ve formátu Markdow
 ## Umístění souborů
 
 ### Markdown dokumentace
+
 - **Admin**: `doc/api/admin/modules/{module-name}.md`
 - **Public**: `doc/api/public/modules/{module-name}.md`
 - **Shared**: `doc/api/shared/modules/{module-name}.md`
 
 ### OpenAPI specifikace
+
 - `doc/api/openapi/{module-name}.openapi.yml`
 
 **Příklady:**
@@ -129,7 +131,9 @@ Podle tohoto návodu vytváříš dokumentaci pro API moduly ve formátu Markdow
 
 **✅ SPRÁVNĚ** (code block):
 ````markdown
+
 #### Headers
+
 ```
 Authorization: Bearer {token}
 Accept: application/json
@@ -235,6 +239,7 @@ sort[0][field]=sort-random30&sort[0][order]=asc
 ### 1. Hlavička modulu
 
 ```markdown
+
 # {Název modulu} API
 
 **Verze:** 1.0.0  
@@ -242,13 +247,16 @@ sort[0][field]=sort-random30&sort[0][order]=asc
 **Odpovědná osoba:** {Jméno}
 
 ## Popis
+
 Stručný popis co modul dělá, jaké funkcionality poskytuje.
 
 ## Autentizace
+
 - **Admin**: Vyžaduje `auth:sanctum` + role/oprávnění
 - **Public**: Veřejně přístupné / Vyžaduje autentizaci
 
 ## Base URL
+
 - **Admin**: `/api/admin/{resource}`
 - **Public**: `/api/public/{resource}`
 ```
@@ -256,6 +264,7 @@ Stručný popis co modul dělá, jaké funkcionality poskytuje.
 ### 2. Přehled endpointů
 
 ```markdown
+
 ## Přehled endpointů
 
 | Metoda | Endpoint | Popis | Auth | Middleware |
@@ -279,6 +288,7 @@ Pro každý endpoint:
 ---
 
 ## GET `/products`
+
 Vrací seznam produktů s možností filtrování, řazení a stránkování.
 
 ### Request
@@ -288,6 +298,7 @@ Vrací seznam produktů s možností filtrování, řazení a stránkování.
 **Middleware:** `vaTenant`
 
 #### Headers
+
 ```
 Authorization: Bearer {token}
 Accept: application/json
@@ -297,6 +308,7 @@ X-Channel: 1
 ```
 
 #### Query parametry
+
 | Parametr | Typ | Povinnost | Popis | Příklad |
 |----------|-----|-----------|-------|---------|
 | `page[number]` | integer | volitelné | Číslo stránky | `1` |
@@ -306,6 +318,7 @@ X-Channel: 1
 | `sort[0][order]` | string | volitelné | Směr (asc/desc) | `"desc"` |
 
 #### Příklad requestu
+
 ```bash
 GET /api/admin/products?page[number]=1&page[size]=20
 
@@ -318,6 +331,7 @@ X-Channel: 1
 ### Response
 
 #### Success (200 OK)
+
 ```json
 {
   "data": [ { "id": 1, "title": "Produkt", ... } ],
@@ -327,15 +341,18 @@ X-Channel: 1
 ```
 
 #### Error responses
+
 ...
 
 ### HTTP Status kódy
+
 - `200 OK` - Úspěšné načtení
 - `401 Unauthorized` - Chybí token
 - `403 Forbidden` - Nedostatečná oprávnění
 - `422 Unprocessable Entity` - Validační chyba
 
 ### Poznámky
+
 - Data podle `X-Data-Locale`
 - `trash=true` pro smazané záznamy
 ```
@@ -422,6 +439,7 @@ Konzistentní formát: `message` a `errors` objekt
 Na konci dokumentace **VŽDY** přidej changelog:
 
 ```markdown
+
 ## Změny a historie
 
 | Verze | Datum | Popis změny |

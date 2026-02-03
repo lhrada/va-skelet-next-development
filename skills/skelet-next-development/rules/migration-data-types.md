@@ -3,7 +3,9 @@ impact: MEDIUM
 impactDescription: Správné datové typy zajišťují konzistenci a výkon
 tags: migration, data-types, columns, decimal, price
 ---
+
 ## Běžné datové typy a sloupce
+
 **Impact: MEDIUM**
 Používej správné datové typy pro různé druhy dat. Zejména pro ceny, měny a čísla dodržuj standardní precision.
 **Incorrect:**
@@ -45,7 +47,9 @@ Schema::create('products', function (Blueprint $table) {
 });
 ```
 **Běžné datové typy:**
+
 ### Stringy
+
 ```php
 // Email - velký string kvůli dlouhým emailům
 $table->string('email', 2048)->nullable()->default(null)
@@ -65,7 +69,9 @@ $table->text('perex')->nullable()->default(null)
 $table->longText('description')->nullable()->default(null)
     ->comment('Full product description');
 ```
+
 ### Čísla
+
 ```php
 // Integer pro počty
 $table->integer('stock')->default(0)
@@ -79,7 +85,9 @@ $table->bigInteger('external_id')->nullable()->default(null)
 $table->tinyInteger('status')->default(0)
     ->comment('Status code');
 ```
+
 ### Boolean
+
 ```php
 // Boolean vždy s default hodnotou
 $table->boolean('is_active')->default(false)
@@ -89,7 +97,9 @@ $table->boolean('has_stock')->nullable()->default(null)
 $table->boolean('in_offer')->default(true)->index()
     ->comment('The product is currently on offer');
 ```
+
 ### Datumy a časy
+
 ```php
 // DateTime pro přesné datum a čas
 $table->dateTime('published_at')->index()->nullable()->default(null)

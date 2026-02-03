@@ -296,6 +296,7 @@ Kolekce používá tyto proměnné z Environment:
 ## Testovací skripty
 
 ### Standardní test (GET, PUT, PATCH, DELETE):
+
 ```javascript
 // Check status code is 200
 pw.test("Status code is 200", ()=> {
@@ -304,6 +305,7 @@ pw.test("Status code is 200", ()=> {
 ```
 
 ### Test pro create (POST):
+
 ```javascript
 // Check status code is 201
 pw.test("Status code is 201", ()=> {
@@ -350,6 +352,7 @@ doc/hoppscotch/{ModelName}.json
 Body by mělo odpovídat validačním pravidlům z `{Model}Validation`.
 
 ### Store (POST):
+
 ```json
 {
   "key": "example-key",
@@ -365,6 +368,7 @@ Body by mělo odpovídat validačním pravidlům z `{Model}Validation`.
 ```
 
 ### Update PUT (kompletní data):
+
 ```json
 {
   "key": "updated-key",
@@ -380,6 +384,7 @@ Body by mělo odpovídat validačním pravidlům z `{Model}Validation`.
 ```
 
 ### Update PATCH (částečná data):
+
 ```json
 {
   "name": "Jen změna názvu",
@@ -392,16 +397,19 @@ Body by mělo odpovídat validačním pravidlům z `{Model}Validation`.
 Pokud kontroler používá EnumController, přidej relevantní enum requesty:
 
 ### Enum - {Model} keys
+
 **Endpoint:** `<<baseUri>><<path>>/enums/{model}-keys`
 **Method:** GET
 **Name:** `Enum - {Model} keys`
 
 ### Enum - {Model} pairs
+
 **Endpoint:** `<<baseUri>><<path>>/enums/{model}-pairs`
 **Method:** GET
 **Name:** `Enum - {Model} pairs`
 
 ### Enum - {Model} types
+
 **Endpoint:** `<<baseUri>><<path>>/enums/{model}-types`
 **Method:** GET
 **Name:** `Enum - {Model} types`

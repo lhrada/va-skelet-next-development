@@ -140,5 +140,3 @@ $table->string('as')->index()
 - Plná podpora Unicode (emoji, speciální znaky)
 - Správné řazení s diakritikou
 - User-generated content
-
-Reference: [Database Instructions](../../instructions/database.instructions.md)

@@ -219,5 +219,3 @@ Schema::create('profiles_objects', function (Blueprint $table) {
 **⚠️ Důležité pro collation:**
 - Sloupce `as` a `separator` jsou řídící enum hodnoty → **`utf8_general_ci`**
 - Popisky (`description_*`) jsou user content → **výchozí utf8mb4** (BEZ collation)
-
-Reference: [Database Instructions](../../instructions/database.instructions.md)

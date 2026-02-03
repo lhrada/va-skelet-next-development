@@ -127,10 +127,13 @@ $role->givePermissionTo(Permission::ArticleUpdateAny->value);
 ## Kontrola oprávnění v databázi
 
 ```bash
+
 # Tinker
+
 docker compose run php php artisan tinker
 
 # V tinkeru
+
 Spatie\Permission\Models\Permission::where('name', 'like', 'article.%')->get();
 ```
 
@@ -166,6 +169,7 @@ docker compose run php php artisan app:create-permissions
 docker compose run php php artisan tinker
 
 # V tinkeru
+
 Spatie\Permission\Models\Permission::where('name', 'like', 'landmark.%')->get();
 ```
 
@@ -191,13 +195,17 @@ public function create(?User $user): bool
 
 **Řešení:**
 ```bash
+
 # Smazat staré oprávnění
+
 docker compose run php php artisan tinker
 
 # V tinkeru
+
 Spatie\Permission\Models\Permission::where('name', 'old-permission-name')->delete();
 
 # Znovu spustit command
+
 docker compose run php php artisan app:create-permissions
 ```
 
@@ -213,13 +221,17 @@ docker compose run php php artisan app:create-permissions
 
 **Řešení:**
 ```bash
+
 # Vytvořit roli
+
 docker compose run php php artisan tinker
 
 # V tinkeru
+
 Spatie\Permission\Models\Role::create(['name' => 'editor']);
 
 # Znovu spustit command
+
 docker compose run php php artisan app:create-permissions
 ```
 

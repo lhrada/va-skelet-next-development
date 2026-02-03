@@ -107,5 +107,3 @@ $table->text('description')->nullable()
 - Veškerý user-generated content s diakritikou
 
 **Více informací:** Viz [migration-collation](migration-collation.md) pravidlo
-
-Reference: [Database Instructions](../../instructions/database.instructions.md)

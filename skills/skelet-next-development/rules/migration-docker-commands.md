@@ -14,7 +14,9 @@ Všechny příkazy pro práci s migrací MUSÍ běžet v Docker kontejneru pomoc
 **Incorrect:**
 
 ```bash
+
 # Spuštění mimo Docker - nemusí mít přístup k DB
+
 php artisan make:migration create_products_table
 php artisan migrate
 ```
@@ -22,19 +24,25 @@ php artisan migrate
 **Correct:**
 
 ```bash
+
 # Vytvoření migrace
+
 docker compose run php php artisan make:migration create_products_table
 
 # Spuštění migrace
+
 docker compose run php php artisan migrate
 
 # Vytvoření modelu s migrací
+
 docker compose run php php artisan make:model Product -m
 
 # Rollback
+
 docker compose run php php artisan migrate:rollback
 
 # Reset databáze + seed
+
 docker compose run php php artisan migrate:fresh --seed
 ```
 
@@ -42,5 +50,3 @@ docker compose run php php artisan migrate:fresh --seed
 - Aplikace běží v Docker kontejneru
 - Pouze kontejner má přístup k databázi
 - Zajišťuje konzistentní prostředí
-
-Reference: [Database Instructions](../../instructions/database.instructions.md)
