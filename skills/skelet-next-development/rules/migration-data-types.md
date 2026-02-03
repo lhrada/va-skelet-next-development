@@ -1,3 +1,4 @@
+---
 title: Běžné datové typy a sloupce
 impact: MEDIUM
 impactDescription: Správné datové typy zajišťují konzistenci a výkon
