@@ -72,7 +72,8 @@ final class ProductResource extends JsonResource
             'key' => $this->key,
             'name' => $this->name,
             'sku' => $this->sku,
-            'price' => GenericSerializer::toMoney($this->price),
+            // Objekt VA\Currency\Money::class [amount=>100.00, currency=>'USD']
+            'price' => $this->price,
             
             // Boolean
             'published' => $this->published,

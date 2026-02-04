@@ -23,13 +23,13 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
-use App\Models\Product;
+use App\Models\Discount;
 use App\Models\User;
 use Dakujem\Strata\Http\Forbidden;
 use Frame\Permissions\Permission;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-final class ProductPolicy
+final class DiscountPolicy
 {
     use HandlesAuthorization;
 
@@ -40,80 +40,82 @@ final class ProductPolicy
 
     public function viewAny(?User $user): bool
     {
-        if ($user && $user->can(Permission::ProductViewAny->value)) {
-            return true;
+        if ($user?->can(Permission::DiscountViewAny->value)) {
+            return Response::allow();
         }
-        
-        throw new Forbidden('Product: Forbidden')
-            ->convey(__('Nemáte oprávnění k zobrazení seznamu'));
+
+        throw new Forbidden('Discount: Forbidden')
+            ->convey(__('Nemáte oprávnění k zobrazení slev'));
     }
 
-    public function view(?User $user, Product $product): bool
+    public function view(?User $user, Discount $discount): bool
     {
-        if ($user && $user->can(Permission::ProductView->value)) {
-            return true;
+        if ($user?->can(Permission::DiscountViewAny->value)) {
+            return Response::allow();
         }
-        
-        throw new Forbidden('Product: Forbidden')
+
+        throw new Forbidden('Discount: Forbidden')
             ->convey(__('Nemáte oprávnění k zobrazení detailu'));
     }
 
     public function create(?User $user): bool
     {
-        if ($user && $user->can(Permission::ProductCreate->value)) {
-            return true;
+        if ($user?->can(Permission::DiscountCreate->value)) {
+            return Response::allow();
         }
-        
-        throw new Forbidden('Product: Forbidden')
-            ->convey(__('Nemáte oprávnění k vytvoření záznamu'));
+
+        throw new Forbidden('Discount: Forbidden')
+            ->convey(__('Nemáte oprávnění k vytvoření'));
     }
 
-    public function update(?User $user, Product $product): bool
+    public function update(?User $user, Discount $discount): bool
     {
-        if ($user && $user->can(Permission::ProductUpdateAny->value)) {
-            return true;
+        if ($user?->can(Permission::DiscountUpdateAny->value)) {
+            return Response::allow();
         }
-        
-        throw new Forbidden('Product: Forbidden')
-            ->convey(__('Nemáte oprávnění k aktualizaci záznamu'));
+
+        throw new Forbidden('Discount: Forbidden')
+            ->convey(__('Nemáte oprávnění k aktualizaci'));
     }
 
-    public function delete(?User $user, Product $product): bool
+    public function delete(?User $user, Discount $discount): bool
     {
-        if ($user && $user->can(Permission::ProductDelete->value)) {
-            return true;
+        if ($user?->can(Permission::DiscountDeleteAny->value)) {
+            return Response::allow();
         }
-        
-        throw new Forbidden('Product: Forbidden')
-            ->convey(__('Nemáte oprávnění ke smazání záznamu'));
+
+        throw new Forbidden('Discount: Forbidden')
+            ->convey(__('Nemáte oprávnění ke smazání'));
     }
 }
 ```
+
+## Logika
+
+- **Má oprávnění** → `return Response::allow();`
+- **Nemá oprávnění** → `throw new Forbidden('...')->convey(__('...'));`
 
 ## Standardní metody Policy
 
 | Metoda | Parametry | Oprávnění | Použití |
 |--------|-----------|-----------|---------|
 | `viewAny` | `?User` | `{Model}ViewAny` | Seznam záznamů (index) |
-| `view` | `?User`, `Model` | `{Model}View` | Detail záznamu (show) |
+| `view` | `?User`, `Model` | `{Model}ViewAny` | Detail záznamu (show) |
 | `create` | `?User` | `{Model}Create` | Vytvoření (store) |
 | `update` | `?User`, `Model` | `{Model}UpdateAny` | Aktualizace (update) |
-| `delete` | `?User`, `Model` | `{Model}Delete` | Smazání (destroy) |
+| `delete` | `?User`, `Model` | `{Model}DeleteAny` | Smazání (destroy) |
 
 ## ViewAny vs ViewOwn
-
-Pro podporu "vlastních" záznamů:
 
 ```php
 public function viewAny(?User $user): bool
 {
-    if ($user && $user->can(Permission::ArticleViewAny->value)) {
-        return true;
+    if ($user?->can(Permission::ArticleViewAny->value)) {
+        return Response::allow();
     }
     
-    // Pokud může vidět vlastní, povol viewAny (filtrování bude v service)
-    if ($user && $user->can(Permission::ArticleViewOwn->value)) {
-        return true;
+    if ($user?->can(Permission::ArticleViewOwn->value)) {
+        return Response::allow();
     }
     
     throw new Forbidden('Article: Forbidden')
@@ -122,13 +124,12 @@ public function viewAny(?User $user): bool
 
 public function view(?User $user, Article $article): bool
 {
-    if ($user && $user->can(Permission::ArticleViewAny->value)) {
-        return true;
+    if ($user?->can(Permission::ArticleViewAny->value)) {
+        return Response::allow();
     }
     
-    // Kontrola vlastnictví
-    if ($user && $user->can(Permission::ArticleViewOwn->value) && $user->id === $article->created_by) {
-        return true;
+    if ($user?->can(Permission::ArticleViewOwn->value) && $user->id === $article->created_by) {
+        return Response::allow();
     }
     
     throw new Forbidden('Article: Forbidden')
@@ -141,17 +142,16 @@ public function view(?User $user, Article $article): bool
 ```php
 public function update(?User $user, Product $product): bool
 {
-    if ($user && $user->can(Permission::ProductUpdateAny->value)) {
-        return true;
+    if ($user?->can(Permission::ProductUpdateAny->value)) {
+        return Response::allow();
     }
     
-    // Vlastní záznamy
-    if ($user && $user->can(Permission::ProductUpdateOwn->value) && $user->id === $product->created_by) {
-        return true;
+    if ($user?->can(Permission::ProductUpdateOwn->value) && $user->id === $product->created_by) {
+        return Response::allow();
     }
     
     throw new Forbidden('Product: Forbidden')
-        ->convey(__('Nemáte oprávnění k aktualizaci záznamu'));
+        ->convey(__('Nemáte oprávnění k aktualizaci'));
 }
 ```
 
@@ -229,22 +229,22 @@ Pro specifické akce:
 ```php
 public function publish(?User $user, Article $article): bool
 {
-    if ($user && $user->can(Permission::ArticlePublish->value)) {
-        return true;
+    if ($user?->can(Permission::ArticlePublish->value)) {
+        return Response::allow();
     }
     
     throw new Forbidden('Article: Forbidden')
-        ->convey(__('Nemáte oprávnění k publikování článku'));
+        ->convey(__('Nemáte oprávnění k publikování'));
 }
 
 public function duplicate(?User $user, Product $product): bool
 {
-    if ($user && $user->can(Permission::ProductDuplicate->value)) {
-        return true;
+    if ($user?->can(Permission::ProductDuplicate->value)) {
+        return Response::allow();
     }
     
     throw new Forbidden('Product: Forbidden')
-        ->convey(__('Nemáte oprávnění k duplikaci produktu'));
+        ->convey(__('Nemáte oprávnění k duplikaci'));
 }
 ```
 
@@ -269,21 +269,6 @@ public function productActions(Request $request, Product $product): Responsable
 }
 ```
 
-## Dakujem\Strata\Http\Forbidden
-
-Pro konzistentní chybové zprávy používej `Forbidden` exception:
-
-```php
-use Dakujem\Strata\Http\Forbidden;
-
-throw new Forbidden('Product: Forbidden')
-    ->convey(__('Nemáte oprávnění k aktualizaci záznamu'));
-```
-
-**Výhody:**
-- Automatický HTTP 403 response
-- `convey()` nastaví uživatelsky přívětivou zprávu
-- První parametr je technická zpráva (pro logy)
 
 ## Testování Policy
 
@@ -322,11 +307,12 @@ class ProductPolicyTest extends TestCase
 **⚠️ Důležité:**
 - **`final class`** - policy nemá potomky
 - **`?User`** parameter - může být null (veřejné API)
-- **`Forbidden` exception** s `convey()` pro uživatelskou zprávu
+- **`bool` return type** - vrací `Response::allow()` nebo hází `Forbidden` exception
 - **`Permission` enum** pro názvy oprávnění
-- **`before()`** pro globální kontroly (Root)
+- **`before()`** vrací `bool|null` pro globální kontroly (Root)
 - **ViewOwn/UpdateOwn** kontrolují `created_by`
 - **`$this->authorize()`** v KAŽDÉ controller metodě
+- **`Dakujem\Strata\Http\Forbidden`** s `convey()` pro identifikovatelné chybové zprávy
 
 **📘 Viz také:**
 - **Permission enum**: `frame/Permissions/Permission.php`

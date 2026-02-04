@@ -266,8 +266,7 @@ enum Key: string
     case DeliveryPickedUp = 'delivery.picked-up';
 
     /**
-     * POVINNÁ metoda - mapování pro API/UI
-     * Vrací překlady pro všechny cases
+     * Mapování pro API/UI - vrací překlady pro všechny cases
      */
     public static function apiMappings(): array
     {
@@ -279,8 +278,7 @@ enum Key: string
     }
 
     /**
-     * POVINNÁ metoda - párování hodnoty a názvu
-     * Vrací strukturu pro jednotlivý case
+     * Párování hodnoty a názvu - vrací strukturu pro jednotlivý case
      */
     public function pair(): array
     {
@@ -292,8 +290,7 @@ enum Key: string
     }
 
     /**
-     * NEPOVINNÁ metoda - detailní metadata
-     * Rozšířené informace včetně nastavení a oprávnění
+     * Detailní metadata - rozšířené informace včetně nastavení a oprávnění
      */
     public static function descriptions(): array
     {
@@ -313,8 +310,7 @@ enum Key: string
     }
 
     /**
-     * NEPOVINNÁ metoda - definice pluginů
-     * Přiřazení cases k pluginům
+     * Definice pluginů - přiřazení cases k pluginům
      */
     public static function plugins(): array
     {
