@@ -144,7 +144,7 @@ Vytvoříme skill s dokumentací pro vývojáře, kteří budou **vytvářet nov
    - Umístění: `.github/prompts/*.prompt.md`
    - Link: [Controller prompt](../../prompts/controller.prompt.md) | [Migration prompt](../../prompts/migration.prompt.md) | [Hoppscotch prompt](../../prompts/hoppscotch.prompt.md)
 
-## Skill Metadata
+## Skill Metadata 
 
 ```yaml
 name: skelet-next-development
