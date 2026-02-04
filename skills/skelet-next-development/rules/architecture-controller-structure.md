@@ -64,4 +64,16 @@ final class ProductController extends Controller
 - Constructor property promotion pro dependencies
 - Middleware registrace v `__construct()`
 
-Reference: [Router Instructions](../../instructions/router.instructions.md)
+---
+
+## Reference - Související pravidla
+
+Viz také:
+- [architecture.md](architecture.md) - Obecné principy oddělení zodpovědností (Separation of Concerns)
+- [controller-structure.md](controller-structure.md) - Další pravidla pro strukturu controlleru
+- [controller-rest-methods.md](controller-rest-methods.md) - Detailní dokumentace REST metod
+- [service-structure.md](service-structure.md) - Service layer implementace
+- [validation-structure.md](validation-structure.md) - Validation třídy a pravidla
+- [resource-structure.md](resource-structure.md) - Resource transformace dat
+- [policy-structure.md](policy-structure.md) - Policy autorizace
+- [code-style.md](code-style.md) - PHP 8.4+ best practices

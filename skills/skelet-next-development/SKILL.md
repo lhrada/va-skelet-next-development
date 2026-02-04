@@ -52,18 +52,34 @@ Aktivuj tento skill když:
 | 2 | Code Style | VYSOKÝ | `code-style-` |
 | 3 | Validace | VYSOKÝ | `validation-` |
 | 4 | Oprávnění | VYSOKÝ | `permissions-` |
-| 5 | Migrace & Databáze | STŘEDNÍ | `migration-` |
-| 6 | Modely | STŘEDNÍ | `model-` |
-| 7 | Services | STŘEDNÍ | `service-` |
-| 8 | Testování | STŘEDNÍ | `testing-` |
-| 9 | Dokumentace | STŘEDNÍ | `docs-` |
-| 10 | Nástroje | NÍZKÝ | `tools-` |
+| 5 | Migrace & Databáze | VYSOKÝ | `migration-` |
+| 6 | Modely | VYSOKÝ | `model-` |
+| 7 | Services | VYSOKÝ | `service-` |
+| 8 | Controllers/Validation/Resources | VYSOKÝ | `controller-`, `validation-`, `resource-` |
+| 9 | Router | VYSOKÝ | `router-`, `enum-controller` |
+| 10 | Policy | VYSOKÝ | `policy-` |
+| 11 | Elasticsearch | VYSOKÝ | `elasticsearch-` |
+| 12 | Dokumentace | STŘEDNÍ | `api-documentation-`, `hoppscotch-` |
+| 13 | Testování | STŘEDNÍ | `testing-` |
+| 14 | Nástroje | NÍZKÝ | `tools-` |
 
 ## Quick Reference
 
 ### 1. Architektura (KRITICKÝ)
 
-**Poznámka:** Architektura je pokryta přímo v Controller, Service, Resource a Policy pravidlech níže.
+- `architecture` - **Oddělování zájmů (Separation of Concerns)** - Controller orchestruje, Service implementuje, Validation validuje, Resource transformuje, Policy autorizuje
+- `architecture-controller-structure` - **Controller: Struktura a Namespace** - Namespace konvence (Admin/Public), REST metody, middleware
+
+**Klíčový princip:** Každá vrstva má svou zodpovědnost. Controller orchestruje, Service implementuje logiku, Validation validuje, Resource transformuje, Policy autorizuje.
+
+**Schéma toku:**
+```
+REQUEST → Controller → Validation → Policy → Service → Model → Resource → RESPONSE
+```
+
+**Viz detailní skills:**
+- [architecture.md](rules/architecture.md) - Obecné principy
+- [architecture-controller-structure.md](rules/architecture-controller-structure.md) - Controller specifika
 
 ### 2. Code Style (VYSOKÝ)
 
@@ -137,6 +153,8 @@ Aktivuj tento skill když:
 - `validation-structure` - Validation třídy s createOrReplace() a update()
 - `resource-structure` - Resource, ListResource, EnumResource s camelCase
 
+**Poznámka:** Viz sekce "1. Architektura" výše a skill [architecture-controller-structure.md](rules/architecture-controller-structure.md) - Controllers jsou orchestrátory s minimální logikou, Services obsahují business logiku, Validation třídy validují vstupy.
+
 ### 12. Router (VYSOKÝ)
 
 - `router-basics` - Aliasy, middleware, model binding
@@ -202,22 +220,23 @@ frame/                          # Framework extensions
 
 Všechna detailní pravidla jsou v adresáři `rules/`:
 
-**Vytvořené skills:**
+**Vytvořené skills dle priority:**
 
+- **Architektura (2)**: `architecture`, `architecture-controller-structure`
 - **Code Style (1)**: `code-style`
 - **Oprávnění (5)**: `permissions-enum-naming`, `permissions-api-mappings`, `permissions-descriptions`, `permissions-groups`, `permissions-artisan-command`
+- **Migrace & Databáze (12)**: `migration-naming`, `migration-required-columns`, `migration-optional-columns`, `migration-data-types`, `migration-collation`, `migration-foreign-keys`, `migration-json-validation`, `migration-reversible`, `migration-translations`, `migration-pivot-tables`, `migration-indexes`, `migration-phpdoc-update`
+- **Modely (5)**: `model-structure`, `model-translatable`, `model-casts`, `model-relationships`, `model-activity-log`
+- **Services (3)**: `service-structure`, `service-upsert`, `service-builder`
 - **Controllers/Validations/Resources (4)**: `controller-structure`, `controller-rest-methods`, `validation-structure`, `resource-structure`
 - **Router (5)**: `router-basics`, `router-admin-rest`, `router-public-rest`, `router-constraints`, `enum-controller`
 - **Policy (1)**: `policy-structure`
 - **Elasticsearch (1)**: `elasticsearch-implementation`
-- **Modely (5)**: `model-structure`, `model-translatable`, `model-casts`, `model-relationships`, `model-activity-log`
-- **Services (3)**: `service-structure`, `service-upsert`, `service-builder`
-- **Migrace (12)**: `migration-naming`, `migration-required-columns`, `migration-optional-columns`, `migration-data-types`, `migration-collation`, `migration-foreign-keys`, `migration-json-validation`, `migration-reversible`, `migration-translations`, `migration-pivot-tables`, `migration-indexes`, `migration-phpdoc-update`
-- **Validace (2)**: `validation-structure`, `validation-foreign-keys`
 - **Dokumentace (2)**: `api-documentation`, `hoppscotch-collections`
+- **Validace (2)**: `validation-structure`, `validation-foreign-keys`
 - **Nástroje (3)**: `tools-docker-commands`, `tools-artisan-scaffolding`, `tools-mcp-tools`
 
-**Celkem: 44 skills**
+**Celkem: 46 skills**
 
 ---
 

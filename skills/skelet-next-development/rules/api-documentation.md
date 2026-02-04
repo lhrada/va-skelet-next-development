@@ -448,6 +448,154 @@ Na konci dokumentace **VŽDY** přidej changelog:
 | 1.0.0 | 2026-01-15 | Inicální verze dokumentace |
 ```
 
+## Verze a aktualizace
+
+**Každá dokumentace MUSÍ mít verzi a datum poslední aktualizace!**
+
+### Základní pravidla
+
+1. **Hlavička dokumentace MUSÍ obsahovat:**
+   - `**Verze:** X.Y.Z` (semver: Major.Minor.Patch)
+   - `**Poslední aktualizace:** YYYY-MM-DD` (ISO formát)
+   - `**Odpovědná osoba:** Jméno` (kdo spravuje dokumentaci)
+
+2. **Při každé změně:**
+   - Aktualizuj verzi podle principů semveru
+   - Aktualizuj datum poslední aktualizace
+   - Přidej záznam do changelog tabulky
+
+3. **Changelog:**
+   - Tabulka s sloupci: Verze, Datum, Popis změny
+   - Umístění: **na konci dokumentace**
+   - Seřazeno od nejnovější verze nahoře
+
+### Principy verzování (SemVer)
+
+#### **Major (X.0.0)** - Zásadní, nekompatibilní změny
+
+Zvyšuj MAJOR, když:
+- Smazeš endpoint nebo jeho parametr
+- Změníš strukturu response (odebrání polí)
+- Změníš chování endpointu (jiný formát dat)
+- Změníš HTTP metodu endpointu
+
+**Příklady:**
+- `1.0.0` → `2.0.0` - Smazání endpointu `/api/products/{id}/details`
+- `1.0.0` → `2.0.0` - Změna response struktury `products` na `items`
+- `1.0.0` → `2.0.0` - Změna oprávnění formátu z `product.view` na `products.list`
+
+#### **Minor (0.X.0)** - Nové funkcionality, zpětně kompatibilní
+
+Zvyšuj MINOR, když:
+- Přidáš nový endpoint
+- Přidáš nový parametr (query, body)
+- Přidáš nové pole do response
+- Přidáš nový filtr nebo řazení
+- Přidáš novou metodu (PUT, PATCH, DELETE)
+
+**Příklady:**
+- `1.0.0` → `1.1.0` - Přidání endpointu `POST /api/products/batch`
+- `1.0.0` → `1.1.0` - Přidání parametru `filter[category]` do GET `/products`
+- `1.0.0` → `1.1.0` - Přidání pole `rating` do response produktu
+- `1.0.0` → `1.1.0` - Přidání nového query parametru `sort[0][field]=popularity`
+
+#### **Patch (0.0.X)** - Opravy a drobné úpravy
+
+Zvyšuj PATCH, když:
+- Opravíš chybu v dokumentaci (překlep, špatný příklad)
+- Doplníš chybějící informaci (HTTP status, poznámka)
+- Aktualizuješ příklady requestů/responses
+- Upřesníš popis parametru
+- Doplníš chybějící parametr v tabulce
+- Opravíš formát kódu
+- Aktualizuješ changelog
+
+**Příklady:**
+- `1.0.0` → `1.0.1` - Oprava chyby v příkladu: `page[number]` místo `page`
+- `1.0.0` → `1.0.1` - Doplnění chybějícího HTTP status kódu `201 Created`
+- `1.0.0` → `1.0.1` - Oprava překladu popisu parametru
+- `1.0.0` → `1.0.1` - Doplnění chybějícího headeru `X-Channel`
+- `1.0.0` → `1.0.1` - Aktualizace příkladu response na reálná data
+
+### Praktické příklady verzování
+
+```
+Počáteční verze:
+1.0.0 - 2026-01-15 - Iniciální verze dokumentace
+
+Přidání nového endpointu:
+1.1.0 - 2026-01-20 - Přidání endpointu POST /products/bulk-update
+
+Přidání nového filtru:
+1.2.0 - 2026-01-25 - Přidání filtru filter[inStock]
+
+Oprava chyby v dokumentaci:
+1.2.1 - 2026-02-01 - Oprava formátu sort parametru v příkladu
+
+Přidání nového parametru:
+1.3.0 - 2026-02-05 - Přidání query parametru include=relations
+
+Smazání endpointu (breaking change):
+2.0.0 - 2026-02-10 - Smazání deprecated endpointu GET /products/legacy
+```
+
+### Changelog tabulka - správný formát
+
+```markdown
+
+## Changelog
+
+| Verze | Datum | Popis změny |
+|-------|-------|------------|
+| 1.3.1 | 2026-02-04 | Oprava chyby - doplnění chybějícího parametru `include` |
+| 1.3.0 | 2026-02-02 | Přidání query parametru `include=relations` pro eager loading |
+| 1.2.0 | 2026-01-28 | Přidán filtr `filter[inStock]` a `filter[category]` |
+| 1.1.0 | 2026-01-20 | Přidán nový endpoint `POST /products/bulk-update` |
+| 1.0.0 | 2026-01-15 | Iniciální verze dokumentace |
+```
+
+**Poznámky k changelog:**
+- Vždy seřazeno od NEJNOVĚJŠÍ verze nahoře
+- Datum ve formátu YYYY-MM-DD (ISO)
+- Popis stručný, max 1 věta
+- Jasně říct: "Přidáno", "Smazáno", "Opraveno", "Aktualizováno"
+
+### Co se updatuje společně
+
+Když aktualizuješ dokumentaci, VŽDY updatuj:
+
+1. **Verzi v hlavičce:**
+   ```markdown
+   **Verze:** 1.2.0
+   **Poslední aktualizace:** 2026-02-04
+   ```
+
+2. **Changelog tabulku:**
+   - Přidej nový řádek na začátek
+   - Nastav správnou verzi
+   - Nastav dnešní datum
+   - Napiš popis změny
+
+3. **V git commitu:**
+   ```
+   docs: Update products API documentation to v1.2.0
+   
+   - Added filter[inStock] parameter
+   - Updated response examples
+   - Fixes #123
+   ```
+
+### Checklist pro aktualizaci
+
+- [ ] Identifikuj typ změny (Major/Minor/Patch)
+- [ ] Spočítej novou verzi (semver)
+- [ ] Aktualizuj verzi v hlavičce (`**Verze:**`)
+- [ ] Aktualizuj datum v hlavičce (`**Poslední aktualizace:**`)
+- [ ] Přidej nový řádek do changelog tabulky
+- [ ] Seřaž changelog od nejnovější verze
+- [ ] Zkontroluj, že popis změny je jasný a stručný
+- [ ] Commit se zmínkou verze (`v1.2.0` v message)
+
 ## Checklist
 
 - [ ] Hlavička (název, verze, datum, osoba)

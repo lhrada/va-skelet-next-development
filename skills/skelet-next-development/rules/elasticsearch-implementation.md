@@ -395,6 +395,141 @@ Poskytuje pomocné metody pro web implementaci:
 - **`getContentText()`** - extrahuje text ze `structure_content` podle `searchable` flagů
 - **`getChannelsForSearch()`** - vrací kanály pro vyhledávání
 
+## Search Coefficient
+
+**Search coefficient** je vyhledávací koeficient pro úpravu skóre výsledků vyhledávání. Umožňuje nastavit prioritu jednotlivých záznamů v Elasticsearch indexu.
+
+### Co je to search coefficient?
+
+- **Rozsah**: 0-100
+- **Výchozí hodnota**: 50 (střední priorita)
+- **Sloupec v DB**: `search_coefficient` (unsigned int)
+- **Účel**: Ovlivňuje ranking vyhledávacích výsledků
+- **Modely**: `Product`, `Article`, `Tag`, atd.
+
+### Jak se počítá?
+
+Metoda `searchCoefficient()` v traitu `EshopSearchable` vrací dva klíče:
+
+```php
+public function searchCoefficient(bool $archive, int $searchCoefficient): array
+{
+    $archiveCoefficient = $archive ? 2 : 1;
+    
+    return [
+        'searchCoefficient' => (($searchCoefficient / 100) * 0.3 + ($archive ? 0.15 : 0.70)) / $archiveCoefficient,
+        'searchCoefficientOrig' => $searchCoefficient / $archiveCoefficient,
+    ];
+}
+```
+
+**Vysvětlení:**
+
+- `$searchCoefficient / 100` - Normalizace na 0-1 (50 = 0.5)
+- `(searchCoefficient / 100) * 0.3 + 0.70` - Běžný záznam: 30% z koeficientu + 70% základ
+  - Příklad: 50 → (0.5 * 0.3) + 0.70 = 0.85
+  - Příklad: 100 → (1.0 * 0.3) + 0.70 = 1.00
+- `($archive ? 0.15 : 0.70)` - Archivovaný záznam: 15% místo 70%
+  - Archiv snižuje score na polovinu (dělení 2)
+- `searchCoefficientOrig` - Původní koeficient vydělený `archiveCoefficient`
+
+### Příklady výpočtu
+
+**Běžný záznam (není v archivu):**
+```
+search_coefficient = 50
+searchCoefficient = (0.5 * 0.3 + 0.70) / 1 = 0.85
+searchCoefficientOrig = 50 / 1 = 50
+```
+
+**Běžný záznam (archive=true):**
+```
+search_coefficient = 50
+archiveCoefficient = 2
+searchCoefficient = (0.5 * 0.3 + 0.15) / 2 = 0.30
+searchCoefficientOrig = 50 / 2 = 25
+```
+
+**Vysoká priorita (search_coefficient=100):**
+```
+Běžný: (1.0 * 0.3 + 0.70) / 1 = 1.00
+Archiv: (1.0 * 0.3 + 0.15) / 2 = 0.225
+```
+
+**Nízká priorita (search_coefficient=0):**
+```
+Běžný: (0.0 * 0.3 + 0.70) / 1 = 0.70
+Archiv: (0.0 * 0.3 + 0.15) / 2 = 0.075
+```
+
+### Použití v modelu
+
+V `toSearchableArray()` se koeficient přidá automaticky:
+
+```php
+public function toSearchableArray(): array
+{
+    $archive = false; // nebo nějaká logika pro určení
+    $searchCoefficient = $this->search_coefficient;
+    
+    $payload = [
+        'id' => $this->id,
+        'title' => $this->title,
+        // ... další data ...
+    ]
+    + $this->scoutMetadata()
+    + $this->searchCoefficient($archive, $searchCoefficient); // Přidá searchCoefficient a searchCoefficientOrig
+    
+    return $payload;
+}
+```
+
+### Jak funguje v Elasticsearch?
+
+Vyhledávací koeficient se používá v Elasticsearch pro **boosting** výsledků:
+
+1. **Zvyšuje relevanci**: Záznamy s vyšším koeficientem se zobrazují výše
+2. **Boosting Query**: Koeficient se používá jako boost faktor v dotazu
+3. **Normalizace**: Hodnota se normalizuje pro konzistentní chování
+4. **Archive režim**: Archivované záznamy mají nižší skóre
+
+### Příklad vyhledávání s koeficientem
+
+```php
+use App\Models\Search\Web\Product;
+use Frame\Elastic\Queries\FunctionScoreQuery;
+
+// Vyhledávání s aplikací search coefficient
+$results = Product::search('laptop')
+    ->query(function ($query) {
+        // Elasticsearch automaticky aplikuje searchCoefficient
+        return $query;
+    })
+    ->get();
+
+// Výsledky budou seřazeny podle skóre + search coefficient
+// Produkt se coefficient=100 se zobrazí výše než s coefficient=50
+```
+
+### Nastavení v administraci
+
+Search coefficient se obvykle upravuje v administraci pro jednotlivé záznamy:
+
+```php
+// Příklad: Zvýšit prioritu produktu
+$product->update(['search_coefficient' => 100]);
+
+// Elasticsearch se automaticky aktualizuje přes Scout
+```
+
+### Důležité poznámky
+
+- **Výchozí hodnota**: 50 (nastaveno v migraci)
+- **Rozsah**: Formálně 0-100, ale lze použít i vyšší hodnoty
+- **Vliv na archive**: Archivované záznamy mají poloviční skóre
+- **Scout Listener**: Změna koeficientu automaticky aktualizuje Elasticsearch
+- **Čtení z indexu**: Vyhledávací API vrací `searchCoefficient` v response
+
 ## Automatická aktualizace indexu
 
 Scout automaticky aktualizuje index při:
