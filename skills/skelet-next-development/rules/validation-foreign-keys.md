@@ -49,4 +49,4 @@ public function createOrReplace(Request $request): array
 - Validace: `user`, `category`, `mainImage`
 - Eloquent vztah: `user()`, `category()`, `image()`
 
-Reference: [Controller Prompt](../../prompts/controller.prompt.md)
+Reference: [Controller REST Methods](controller-rest-methods.md), [Validation Structure](validation-structure.md)
