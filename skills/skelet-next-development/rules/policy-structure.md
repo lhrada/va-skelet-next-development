@@ -28,6 +28,7 @@ use App\Models\User;
 use Dakujem\Strata\Http\Forbidden;
 use Frame\Permissions\Permission;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Auth\Access\Response;
 
 final class DiscountPolicy
 {
@@ -38,7 +39,7 @@ final class DiscountPolicy
         return null;
     }
 
-    public function viewAny(?User $user): bool
+    public function viewAny(?User $user): Response
     {
         if ($user?->can(Permission::DiscountViewAny->value)) {
             return Response::allow();
@@ -48,7 +49,7 @@ final class DiscountPolicy
             ->convey(__('Nemáte oprávnění k zobrazení slev'));
     }
 
-    public function view(?User $user, Discount $discount): bool
+    public function view(?User $user, Discount $discount): Response
     {
         if ($user?->can(Permission::DiscountViewAny->value)) {
             return Response::allow();
@@ -58,7 +59,7 @@ final class DiscountPolicy
             ->convey(__('Nemáte oprávnění k zobrazení detailu'));
     }
 
-    public function create(?User $user): bool
+    public function create(?User $user): Response
     {
         if ($user?->can(Permission::DiscountCreate->value)) {
             return Response::allow();
@@ -68,7 +69,7 @@ final class DiscountPolicy
             ->convey(__('Nemáte oprávnění k vytvoření'));
     }
 
-    public function update(?User $user, Discount $discount): bool
+    public function update(?User $user, Discount $discount): Response
     {
         if ($user?->can(Permission::DiscountUpdateAny->value)) {
             return Response::allow();
@@ -78,7 +79,7 @@ final class DiscountPolicy
             ->convey(__('Nemáte oprávnění k aktualizaci'));
     }
 
-    public function delete(?User $user, Discount $discount): bool
+    public function delete(?User $user, Discount $discount): Response
     {
         if ($user?->can(Permission::DiscountDeleteAny->value)) {
             return Response::allow();
@@ -108,7 +109,7 @@ final class DiscountPolicy
 ## ViewAny vs ViewOwn
 
 ```php
-public function viewAny(?User $user): bool
+public function viewAny(?User $user): Response
 {
     if ($user?->can(Permission::ArticleViewAny->value)) {
         return Response::allow();
@@ -122,7 +123,7 @@ public function viewAny(?User $user): bool
         ->convey(__('Nemáte oprávnění k zobrazení seznamu'));
 }
 
-public function view(?User $user, Article $article): bool
+public function view(?User $user, Article $article): Response
 {
     if ($user?->can(Permission::ArticleViewAny->value)) {
         return Response::allow();
@@ -140,7 +141,7 @@ public function view(?User $user, Article $article): bool
 ## UpdateAny vs UpdateOwn
 
 ```php
-public function update(?User $user, Product $product): bool
+public function update(?User $user, Product $product): Response
 {
     if ($user?->can(Permission::ProductUpdateAny->value)) {
         return Response::allow();
@@ -227,7 +228,7 @@ protected $policies = [
 Pro specifické akce:
 
 ```php
-public function publish(?User $user, Article $article): bool
+public function publish(?User $user, Article $article): Response
 {
     if ($user?->can(Permission::ArticlePublish->value)) {
         return Response::allow();
@@ -237,7 +238,7 @@ public function publish(?User $user, Article $article): bool
         ->convey(__('Nemáte oprávnění k publikování'));
 }
 
-public function duplicate(?User $user, Product $product): bool
+public function duplicate(?User $user, Product $product): Response
 {
     if ($user?->can(Permission::ProductDuplicate->value)) {
         return Response::allow();
@@ -307,7 +308,7 @@ class ProductPolicyTest extends TestCase
 **⚠️ Důležité:**
 - **`final class`** - policy nemá potomky
 - **`?User`** parameter - může být null (veřejné API)
-- **`bool` return type** - vrací `Response::allow()` nebo hází `Forbidden` exception
+- **`Response` return type** - vrací `Response::allow()` nebo hází `Forbidden` exception
 - **`Permission` enum** pro názvy oprávnění
 - **`before()`** vrací `bool|null` pro globální kontroly (Root)
 - **ViewOwn/UpdateOwn** kontrolují `created_by`
