@@ -32,6 +32,8 @@ Podle tohoto návodu vytváříš dokumentaci pro API moduly ve formátu Markdow
 
 ## Kriticky důležité - Přesnost dat
 
+**Dokumentace musí být vždy psaná s diakritikou.**
+
 **NESMÍŠ SI VYMÝŠLET** strukturu dat!
 
 **VŠECHNO MUSÍŠ ZJISTIT Z KÓDU:**
