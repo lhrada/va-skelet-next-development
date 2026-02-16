@@ -137,8 +137,8 @@ REQUEST → Controller → Validation → Policy → Service → Model → Resou
 
 ### 9. Dokumentace (STŘEDNÍ)
 
-- `api-documentation` - Kompletní API dokumentace (struktura, běžné chyby, MCP registrace)
-- `hoppscotch-collections` - Hoppscotch v10 kolekce pro API testování
+- `api-documentation` - Kompletní API dokumentace (struktura, běžné chyby, MCP registrace, verze & changelog)
+- `hoppscotch-collections` - Hoppscotch v11 kolekce (JSON format) pro API testování s response examples a testy
 
 ### 10. Nástroje (NÍZKÝ)
 

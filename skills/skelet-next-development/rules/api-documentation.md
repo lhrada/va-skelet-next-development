@@ -644,3 +644,4 @@ Když aktualizuješ dokumentaci, VŽDY updatuj:
 - **Přesné oprávnění** - formát `entity.action.scope`
 
 Reference: [Controller Structure](controller-structure.md), [Validation Structure](validation-structure.md), [Resource Structure](resource-structure.md)
+
