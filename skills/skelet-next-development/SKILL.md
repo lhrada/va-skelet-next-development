@@ -137,8 +137,8 @@ REQUEST → Controller → Validation → Policy → Service → Model → Resou
 
 ### 9. Dokumentace (STŘEDNÍ)
 
-- `api-documentation` - Kompletní API dokumentace (struktura, běžné chyby, MCP registrace, verze & changelog)
-- `hoppscotch-collections` - Hoppscotch v11 kolekce (JSON format) pro API testování s response examples a testy
+- `api-documentation` - Kompletní API dokumentace (struktura, běžné chyby, MCP registrace)
+- `hoppscotch-collections` - Hoppscotch v10 kolekce pro API testování
 
 ### 10. Nástroje (NÍZKÝ)
 
@@ -160,8 +160,10 @@ REQUEST → Controller → Validation → Policy → Service → Model → Resou
 - `router-basics` - Aliasy, middleware, model binding
 - `router-admin-rest` - Admin REST struktura s withTrashed
 - `router-public-rest` - Public REST struktura s preview a cache
-- `router-constraints` - RouteParamType constraints
+- `router-constraints` - RouteParamType constraints a cache middleware (getRouteCacheMiddleware)
 - `enum-controller` - EnumController pro výčtové seznamy
+
+**Cache middleware:** Funkce `getRouteCacheMiddleware()` implementuje Stale-While-Revalidate pattern pro optimalizaci výkonu API responses. Více viz `router-constraints.md`.
 
 ## Běžné příkazy
 

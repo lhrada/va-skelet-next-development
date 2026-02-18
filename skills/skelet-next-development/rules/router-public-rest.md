@@ -121,25 +121,34 @@ $url = URL::temporarySignedRoute(
 
 ## Cache na Public routách
 
-Public routy často používají cache:
+Public routy často používají cache middleware s **Stale-While-Revalidate (SWR)** patternem:
 
 ```php
+use function getRouteCacheMiddleware;
+
 Route::get('', [PublicProductController::class, 'index'])
-    ->middleware(
+    ->middleware([
         getRouteCacheMiddleware(
             tags: [Product::getCacheTag()],
-            expire: 1 * 60 * 60  // 1 hodina
+            lifetime: hours(1),  // 1 hodina fresh cache
+            grace: minutes(15)   // 15 minut stale cache
         )
-    );
+    ]);
 
 Route::get('/{product}', [PublicProductController::class, 'show'])
-    ->middleware(
+    ->middleware([
         getRouteCacheMiddleware(
             tags: [Product::getCacheTag()],
-            expire: 24 * 60 * 60  // 24 hodin
+            lifetime: days(1),   // 24 hodin fresh cache
+            grace: hours(2)      // 2 hodiny stale cache
         )
-    );
+    ]);
 ```
+
+**SWR pattern:**
+- `lifetime` - jak dlouho je cache fresh (servírována přímo)
+- `grace` - jak dlouho se stále servíruje stale cache při refreshi na pozadí
+- Celkový TTL = lifetime + grace
 
 ### Vícenásobné cache tags
 
@@ -152,10 +161,13 @@ Route::get('/sitemap', PublicSitemapController::class)
                 Article::getCacheTag(),
                 Tag::getCacheTag(),
             ],
-            expire: 24 * 60 * 60
+            lifetime: days(1),
+            grace: hours(2)
         )
     ]);
 ```
+
+**Více o cache middleware viz:** [Router Constraints](router-constraints.md)
 
 ## Příklad komplexní Public struktury
 
@@ -168,32 +180,35 @@ Route::prefix('/public')->middleware(['auth.optional:sanctum', 'tenant'])->group
         ->group(function () {
             // Listing s cache
             Route::get('', [PublicArticleController::class, 'index'])
-                ->middleware(
+                ->middleware([
                     getRouteCacheMiddleware(
                         tags: [Article::getCacheTag()],
-                        expire: 1 * 60 * 60
+                        lifetime: hours(1),
+                        grace: minutes(15)
                     )
-                );
+                ]);
             
             // Detail podle ID
             Route::get('/{article}', [PublicArticleController::class, 'show'])
-                ->middleware(
+                ->middleware([
                     getRouteCacheMiddleware(
                         tags: [Article::getCacheTag()],
-                        expire: 24 * 60 * 60
+                        lifetime: days(1),
+                        grace: hours(2)
                     )
-                );
+                ]);
             
             // Detail podle klíče (SEO-friendly)
             Route::get('/keys/{article:key}', [PublicArticleController::class, 'show'])
-                ->middleware(
+                ->middleware([
                     getRouteCacheMiddleware(
                         tags: [Article::getCacheTag()],
-                        expire: 24 * 60 * 60
+                        lifetime: days(1),
+                        grace: hours(2)
                     )
-                );
+                ]);
             
-            // Preview (signed URL)
+            // Preview (signed URL) - bez cache
             Route::get('/p/{article}', [PublicArticleController::class, 'show'])
                 ->name(RouteName::ArticlePreview->value)
                 ->middleware(['signed']);
@@ -224,7 +239,7 @@ Route::prefix('/public')->middleware(['auth.optional:sanctum', 'tenant'])->group
 - **Jen GET metody** - žádné zápisy
 - **Preview s `signed` middleware** - `/p/{id}`
 - **Detail podle klíče** - `/keys/{key}` s custom binding
-- **Cache často používána** - `getRouteCacheMiddleware()`
+- **Cache často používána** - `getRouteCacheMiddleware()` s SWR patternem
 - **Bez `withTrashed()`** - public nevidí smazané
 
-Reference: [Router Basics](router-basics.md), [Router Admin REST](router-admin-rest.md), [Router Cache](router-cache.md)
+Reference: [Router Basics](router-basics.md), [Router Admin REST](router-admin-rest.md), [Router Constraints](router-constraints.md)

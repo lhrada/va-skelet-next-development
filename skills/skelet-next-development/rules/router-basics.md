@@ -104,7 +104,7 @@ Route::get('', [PublicProductController::class, 'index'])
     ->middleware(
         getRouteCacheMiddleware(
             tags: [Product::getCacheTag()],
-            expire: 1 * 60 * 60  // 1 hodina
+            lifetime: 1 * 60 * 60  // 1 hodina
         )
     );
 ```

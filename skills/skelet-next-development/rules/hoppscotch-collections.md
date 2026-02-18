@@ -244,7 +244,7 @@ Každý request má následující strukturu:
 
 ### Naming Convention
 
-Používej formát: `{action} - {Description}`
+Používej formát: `{method} - {Description}`
 
 **Příklady:**
 - `index - List contracts`
@@ -1159,7 +1159,7 @@ Viz reference:
 ### Requesty
 - [ ] Vygenerovat všechny REST requesty (index, show, store, update PUT, update PATCH, destroy)
 - [ ] Přidat actions endpoint (pokud existuje)
-- [ ] Použít naming convention: `{action} - {Description}`
+- [ ] Použít naming convention: `{method} - {Description}`
 - [ ] Použít skutečná data z validace pro body
 - [ ] Přidat description k parametrům v angličtině
 - [ ] Přidat standardní headers
@@ -1197,7 +1197,7 @@ Viz reference:
 - **Test scripts** - 200 pro GET/PUT/PATCH/DELETE, 201 pro POST
 - **Body** - podle validace, kompletní pro PUT, částečné pro PATCH
 - **Parametry** - s description v angličtině a ukázkovými hodnotami
-- **Naming** - formát `{action} - {Description}` (index, show, store, update, destroy, actions)
+- **Naming** - formát `{method} - {Description}`
 - **Response examples** - přidávej TAM, KDE JSOU UŽITEČNÉ (index, show s with*, store/update, actions). Jednoduché operace (destroy, restore) mohou mít prázdné `{}`
 
 Reference: [Controller REST Methods](controller-rest-methods.md), [Validation Structure](validation-structure.md)

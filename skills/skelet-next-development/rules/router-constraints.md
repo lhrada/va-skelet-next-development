@@ -1,8 +1,8 @@
 ---
-title: Router constraints a RouteParamType
+title: Router constraints, RouteParamType a Cache Middleware
 impact: MEDIUM
-impactDescription: Constraints zajišťují validaci route parametrů
-tags: router, constraints, validation, routeparamtype
+impactDescription: Constraints zajišťují validaci route parametrů, cache middleware optimalizuje výkon
+tags: router, constraints, validation, routeparamtype, cache, middleware
 ---
 
 ## Router constraints a RouteParamType
@@ -240,6 +240,216 @@ Route::prefix('/admin')->middleware('auth:sanctum')->group(function () {
         });
 });
 ```
+
+## Cache middleware - getRouteCacheMiddleware()
+
+Pro cachování route responses používej helper funkci `getRouteCacheMiddleware()` s **Stale-While-Revalidate (SWR)** patternem.
+
+### Princip SWR
+
+```
+lifetime = fresh cache (servírována přímo)
+grace = stale cache (servírována okamžitě + refresh na pozadí)
+Total TTL = lifetime + grace (uloženo v cache)
+```
+
+**Příklad:** `getRouteCacheMiddleware([], days(7), hours(12))`
+- **0-7 dní**: cache je fresh, servírována přímo
+- **7 dní - 7.5 dní**: cache je stale, servírována okamžitě + refresh na pozadí
+- **Po 7.5 dnech**: cache zcela expiruje
+
+### Signatura funkce
+
+```php
+function getRouteCacheMiddleware(
+    array $tags = [],              // Cache tagy pro selektivní mazání
+    int|CarbonInterval|null $lifetime = null,  // Fresh perioda (default 4h)
+    int|CarbonInterval|null $grace = null,     // Stale perioda (default 1h)
+): string
+```
+
+### Základní použití
+
+```php
+use function getRouteCacheMiddleware;
+use Carbon\CarbonInterval;
+
+// S výchozími hodnotami (4h fresh + 1h grace = 5h TTL)
+Route::get('/products', [PublicProductController::class, 'index'])
+    ->middleware([getRouteCacheMiddleware()]);
+
+// S vlastními časy pomocí helper funkcí
+Route::get('/articles', [PublicArticleController::class, 'index'])
+    ->middleware([
+        getRouteCacheMiddleware(
+            lifetime: days(7),    // 7 dní fresh
+            grace: hours(12)      // 12 hodin stale
+        )
+    ]);
+
+// S vlastními časy pomocí CarbonInterval
+Route::get('/categories', [PublicCategoryController::class, 'index'])
+    ->middleware([
+        getRouteCacheMiddleware(
+            lifetime: CarbonInterval::hours(6),
+            grace: CarbonInterval::minutes(30)
+        )
+    ]);
+
+// S časem v sekundách
+Route::get('/tags', [PublicTagController::class, 'index'])
+    ->middleware([
+        getRouteCacheMiddleware(
+            lifetime: 3600,  // 1 hodina
+            grace: 300       // 5 minut
+        )
+    ]);
+```
+
+### Cache tagy a invalidace
+
+```php
+use App\Models\Product;
+use App\Models\Article;
+
+// S cache tagy pro selektivní invalidaci
+Route::get('/sitemap', [PublicSitemapController::class, 'index'])
+    ->middleware([
+        getRouteCacheMiddleware(
+            tags: [Product::getCacheTag(), Article::getCacheTag()],
+            lifetime: days(1),
+            grace: hours(2)
+        )
+    ]);
+
+// Více tagů
+Route::get('/feed', [PublicFeedController::class, 'index'])
+    ->middleware([
+        getRouteCacheMiddleware(
+            tags: ['products', 'articles', 'categories'],
+            lifetime: hours(12),
+            grace: hours(1)
+        )
+    ]);
+```
+
+### Invalidace cache
+
+Model implementující `CacheObject` interface automaticky invaliduje cache:
+
+```php
+// Model s cache supportem
+class Product extends Model implements CacheObject
+{
+    use Cacheable;
+    
+    public const string CacheTagKey = 'products';
+    
+    protected static function booted(): void
+    {
+        // Automatická invalidace při změnách
+        static::saved(fn() => self::clearCache());
+        static::deleted(fn() => self::clearCache());
+        static::restored(fn() => self::clearCache());
+    }
+}
+```
+
+Manuální invalidace podle tagů:
+
+```php
+use Spatie\ResponseCache\Facades\ResponseCache;
+
+// Invalidace konkrétních tagů
+ResponseCache::clear(['products', 'articles']);
+
+// Invalidace všech cached responses
+ResponseCache::flush();
+```
+
+### Bypass cache
+
+Pro potlačení cachování pošli header:
+
+```http
+X-Cache-Control: no-cache
+```
+
+### Doporučené lifetime hodnoty
+
+| Typ dat | Lifetime | Grace | Poznámka |
+|---------|----------|-------|----------|
+| **Statické stránky** | `days(7)` | `hours(12)` | Zřídka se mění |
+| **Seznamy produktů** | `hours(6)` | `hours(1)` | Střední frekvence změn |
+| **Detaily produktu** | `hours(2)` | `minutes(30)` | Častější změny |
+| **Košík, ceny** | `minutes(15)` | `minutes(5)` | Dynamická data |
+| **Enum seznamy** | `days(30)` | `days(1)` | Téměř neměnné |
+| **Sitemap, Feed** | `days(1)` | `hours(2)` | Denní aktualizace |
+
+### Příklady podle use case
+
+#### Veřejný listing s paginací
+
+```php
+Route::get('/products', [PublicProductController::class, 'index'])
+    ->middleware([
+        getRouteCacheMiddleware(
+            tags: [Product::getCacheTag()],
+            lifetime: hours(6),
+            grace: hours(1)
+        )
+    ]);
+```
+
+#### Sitemap s více modely
+
+```php
+Route::get('/sitemap.xml', [PublicSitemapController::class, 'index'])
+    ->middleware([
+        getRouteCacheMiddleware(
+            tags: [
+                Product::getCacheTag(),
+                Article::getCacheTag(),
+                Category::getCacheTag(),
+            ],
+            lifetime: days(1),
+            grace: hours(2)
+        )
+    ]);
+```
+
+#### Preview endpoint (krátká cache)
+
+```php
+Route::get('/articles/preview/{article:guid}', [PublicArticleController::class, 'preview'])
+    ->middleware([
+        getRouteCacheMiddleware(
+            tags: [Article::getCacheTag()],
+            lifetime: minutes(5),
+            grace: minutes(1)
+        )
+    ]);
+```
+
+#### Enum výčtové seznamy (dlouhá cache)
+
+```php
+Route::get('/enums/product-types', [EnumController::class, 'productTypes'])
+    ->middleware([
+        getRouteCacheMiddleware(
+            lifetime: days(30),
+            grace: days(1)
+        )
+    ]);
+```
+
+**⚠️ Důležité:**
+- **Defaultní hodnoty:** lifetime 4h, grace 1h (celkem 5h TTL)
+- **SWR pattern:** Po lifetime se stará cache stále servíruje (grace perioda) zatímco se refreshuje na pozadí
+- **Cache tagy:** Používej `Model::getCacheTag()` pro automatickou invalidaci
+- **Bypass:** Header `X-Cache-Control: no-cache` potlačí cachování
+- **Helper funkce:** Používej `days()`, `hours()`, `minutes()` pro čitelnost
+- **Model interface:** Model musí implementovat `CacheObject` pro automatickou invalidaci
 
 **⚠️ Důležité:**
 - **`where()` VŽDY před `group()`** - nikdy naopak
