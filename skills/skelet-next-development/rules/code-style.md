@@ -253,6 +253,97 @@ $config = $this->config ?? $this->getDefaultConfig();
 $limit = isset($request->input('limit')) ? $request->input('limit') : 20;
 ```
 
+## Ternary Operator
+
+**Používej ternary** pro jednoduché podmíněné přiřazení:
+
+```php
+// ✅ SPRÁVNĚ - krátký ternary (single-line)
+$name = $isFoo ? 'foo' : 'bar';
+$status = $isActive ? 'Aktivní' : 'Neaktivní';
+
+// ✅ SPRÁVNĚ - víceřádkový ternary (čitatelnější pro složitější výrazy)
+$result = $object instanceof Model     
+    ? $object->name
+    : 'Výchozí hodnota';
+
+$message = $user?->isAdmin()
+    ? __('Správce systému')
+    : __('Běžný uživatel');
+
+// ✅ SPRÁVNĚ - ternary místo if-else pro side effects (volání metod)
+$condition     
+    ? $this->doSomething()
+    : $this->doSomethingElse();
+
+// ❌ ŠPATNĚ - příliš dlouhé na single-line, mělo by být víceřádkové
+$result = $object instanceof Model && $object->hasValidData() && !$object->isDeleted() ? $object->name : 'Výchozí hodnota';
+
+// ⚠️ POZOR - nested ternary (obtížně čitelné, raději match nebo if-else)
+$status = $value > 10 ? 'Vysoká' : $value > 5 ? 'Střední' : 'Nízká'; // ❌ Nepoužívej!
+
+// ✅ LEPŠÍ - místo nested ternary použij match
+$status = match (true) {
+    $value > 10 => 'Vysoká',
+    $value > 5 => 'Střední',
+    default => 'Nízká',
+};
+```
+
+**Pravidla:**
+
+1. **Single-line ternary** pro jednoduché podmínky s krátkými výrazy
+   ```php
+   $name = $condition ? 'foo' : 'bar';
+   ```
+
+2. **Multi-line ternary** pro čitatelnost (question mark a colon na začátku řádku)
+   ```php
+   $result = $object instanceof Model
+       ? $object->name
+       : 'Výchozí hodnota';
+   ```
+
+3. **Ternary pro side effects** (volání metod)
+   ```php
+   $condition
+       ? $this->doSomething()
+       : $this->doSomethingElse();
+   ```
+
+4. **Nested ternary** - VYHNI SE! Použij `match` nebo `if-else`
+   ```php
+   // ❌ Nečitelné
+   $x = $a ? $b ? 'foo' : 'bar' : 'baz';
+   
+   // ✅ Lepší - match
+   $x = match (true) {
+       $a && $b => 'foo',
+       $a => 'bar',
+       default => 'baz',
+   };
+   ```
+
+**Kdy použít ternary:**
+- Jednoduché podmíněné přiřazení
+- Krátké výrazy (do 50 znaků na řádku)
+- Kombinace s `null coalescing` (`??`)
+- Volání jednotlivých metod (side effects)
+
+**Kdy NEPOUŽÍT:**
+- Nested ternary operátory
+- Složitá logika s více podmínkami → `match` nebo `if-else`
+- Dlouhé výrazy → rozdělí do více řádků nebo `if-else`
+
+**Kombinace s null coalescing:**
+
+```php
+// ✅ SPRÁVNĚ - kombinace ternary a ??
+$name = $user ? $user->name : $defaultName;
+$city = $user?->address?->city ?? 'Bez města';
+$limit = $request->has('limit') ? (int)$request->input('limit') : 20;
+```
+
 ## Enums
 
 **Použij enum** pro fixed sady hodnot s povinnými metodami:
